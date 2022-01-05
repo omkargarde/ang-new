@@ -1,9 +1,9 @@
 import { EventEmitter, Injectable } from "@angular/core";
 import { Product } from "./product.model";
 import { HttpClient } from "@angular/common/http";
-
+import { AuthService } from "../auth/auth.service";
 import { take } from "rxjs/operators";
-
+import { User } from "../auth/user.model";
 import { Subject } from "rxjs";
 
 @Injectable({providedIn: 'root'})
@@ -12,6 +12,7 @@ export class ProductService{
     productsChanged = new Subject<Product[]>();
     constructor(
         private http:HttpClient,
+        private authService: AuthService,
         ){
 
     }

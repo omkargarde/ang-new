@@ -1,8 +1,8 @@
 import { Component, Inject, Injectable, OnDestroy, OnInit  } from '@angular/core';
 import { Router } from '@angular/router';
+import { AuthService } from '../auth/auth.service';
 import { ProductService } from '../items/product.service';
 import { Subscription } from 'rxjs';
-import { AuthService } from '@auth0/auth0-angular';
 
 @Component({
   selector: 'app-header',
@@ -15,19 +15,19 @@ export class HeaderComponent implements OnInit,OnDestroy {
   isAuthenticated = false;
   private userSub: Subscription;
   userEmail:string = null;
-  profileJson: string = null;
-
+  
   constructor(
   @Inject(ProductService) private productService,
-  private router:Router,public auth:AuthService) { }
+  private router:Router,
+  private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.auth.user$.subscribe(
-      (profile) => (
-        this.profileJson = JSON.stringify(profile,null,2)
-      ),
-    );
-    
+    this.userSub = this.authService.user.subscribe(user => {
+      this.isAuthenticated = !!user;
+      this.userEmail = user.email;
+      
+    });
+  
   }
 
   ngOnDestroy(): void {
@@ -39,7 +39,8 @@ export class HeaderComponent implements OnInit,OnDestroy {
   }
 
   onLogOut(){
-    this.router.navigate(['/auth']);
+    this.authService.logout();
+    // this.router.navigate(['/auth']);
   }
 
   onSaveData(){
